@@ -47,6 +47,8 @@ apis:
         url: https://ambientmesh.io/docs/
 
 common:
+  - type: DomainSecurity
+    url: security/ambient-mesh-domain-security.yml
   - type: Website
     url: https://ambientmesh.io/
   - type: Documentation
