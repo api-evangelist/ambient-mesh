@@ -59,6 +59,17 @@ apis:
         url: https://ambientmesh.io/docs/
 
 common:
+  - type: IssueTracker
+    url: https://github.com/istio/istio/issues
+  - type: Releases
+    url: https://github.com/istio/istio/releases
+  - type: SecurityPolicy
+    url: https://github.com/istio/istio/blob/master/.github/SECURITY.md
+  - type: ContributionGuide
+    url: https://github.com/istio/istio/blob/master/CONTRIBUTING.md
+  - type: License
+    name: Apache-2.0
+    url: https://github.com/istio/istio/blob/master/LICENSE
   - type: DomainSecurity
     url: security/ambient-mesh-domain-security.yml
   - type: Website
