@@ -1,0 +1,137 @@
+{
+  "result": {
+    "tools": [
+      {
+        "name": "search",
+        "description": "Search documentation for the following products (Product (Aliases) - [collection source types]):\n\n- **Solo Enterprise For Istio** (istio) - [docs]\n- **Solo Enterprise For Kagent** (kagent) - [docs]\n- **Solo Enterprise For Kgateway** (kgateway) - [docs]\n- **Solo Enterprise For Agentgateway** (agentgateway) - [docs]\n- **Agentgateway Kubernetes** (agentgateway) - [docs]\n- **Agentgateway Standalone** (agentgateway) - [docs]\n- **Solo Enterprise For Agentregistry** (agentregistry) - [docs]\n- **Agentregistry OSS** (agentregistry) - [docs]\n- **Kgateway OSS** (kgateway) - [docs]\n- **Kagent OSS** (kagent) - [docs]\n- **Gloo Mesh Enterprise** (gloo-mesh) - [docs]\n- **Gloo Edge** - [docs]\n- **Gloo Gateway V1** (gloo-gateway v1) - [docs]\n- **Gateway Api** - [docs]\n- **Agentevals OSS** - [docs]\n\n\n**Usage Note:** Evaluate search results: if they provide a complete and certain answer, then proceed. If the result is relevant but incomplete (e.g., ends mid - sentence), refers to a \"see below\" section, then use the `get_chunks` tool to get more context from the same document.\n",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "maxLength": 2000,
+              "description": "The search query to find relevant documentation (max 2000 characters)"
+            },
+            "product": {
+              "type": "string",
+              "enum": [
+                "solo-enterprise-for-istio",
+                "solo-enterprise-for-kagent",
+                "solo-enterprise-for-kgateway",
+                "solo-enterprise-for-agentgateway",
+                "agentgateway-kubernetes",
+                "agentgateway-standalone",
+                "solo-enterprise-for-agentregistry",
+                "agentregistry-oss",
+                "kgateway-oss",
+                "kagent-oss",
+                "gloo-mesh-enterprise",
+                "gloo-edge",
+                "gloo-gateway-v1",
+                "gateway-api",
+                "agentevals-oss"
+              ],
+              "description": "The product to search documentation for"
+            },
+            "limit": {
+              "default": 4,
+              "description": "Maximum number of results to return (default: 4)",
+              "type": "number"
+            }
+          },
+          "required": [
+            "query",
+            "product"
+          ]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_chunks",
+        "description": "\nRetrieve sequential segments of a document to fill in missing context.\n\n**When to use:** Use only when a `search` result is highly relevant but incomplete. This is the preferred way to \"read the rest of the page\" without performing additional keyword searches.\n\n**When to skip:** Do not use if the `search` snippet already contains the full answer or if the search result is irrelevant to the user's query.\n    ",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "collection": {
+              "type": "string",
+              "description": "The Qdrant collection name to query (e.g., 'istio-io_latest_docs')"
+            },
+            "url": {
+              "type": "string",
+              "description": "The URL of the document to retrieve chunks from"
+            },
+            "startIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "The starting chunk index (0-based, inclusive)"
+            },
+            "endIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "The ending chunk index (0-based, inclusive). Will be clamped to the maximum available index if too large."
+            }
+          },
+          "required": [
+            "collection",
+            "url",
+            "startIndex",
+            "endIndex"
+          ]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      },
+      {
+        "name": "get_full_page",
+        "description": "\nRetrieve the full markdown content of a documentation page by its URL from the database.\n\n**When to use:** Use when you need the complete content of a specific page and chunk-based retrieval is insufficient.\n\n**Limits:** Pages longer than 20,000 characters will return an error with the approximate token count. Set `force: true` to retrieve them anyway \u2014 note that very large pages consume significant context window space.\n    ",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "The exact URL of the documentation page to retrieve"
+            },
+            "force": {
+              "description": "Set to true to retrieve the page even if it exceeds the 20,000 character limit. Use with caution \u2014 large pages consume significant context.",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "url"
+          ]
+        },
+        "annotations": {
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        }
+      }
+    ]
+  },
+  "jsonrpc": "2.0",
+  "id": 1
+}

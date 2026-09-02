@@ -1,0 +1,176 @@
+generated: '2026-09-02'
+method: searched
+source: https://ambientmesh.io/docs/
+provider: Ambient Mesh
+providerId: ambient-mesh
+description: >-
+  Cross-cutting semantics for operating Ambient Mesh. Ambient Mesh is a
+  self-hosted Istio ambient-mode distribution: there is no vendor-hosted HTTP
+  API and no callable base URL. The write surface is the operator's own
+  Kubernetes API server, driven declaratively with kubectl/Helm/istioctl against
+  Istio and Kubernetes Gateway API custom resources. Every convention below is
+  read from ambientmesh.io's own documentation.
+
+surface:
+  style: declarative-kubernetes-crd
+  api_host: null
+  api_host_note: >-
+    repair-api-bases.py returned `no-usable-base` for this provider, and that is
+    the correct answer rather than a gap: nothing in apis.yml, and no OpenAPI
+    servers[] block, names an API host because the provider does not run one.
+    The endpoint an operator talks to is their own cluster's kube-apiserver.
+    apis.yml baseURL is left at https://ambientmesh.io, the documentation and
+    distribution host, and deliveryModel.callable_host is already false.
+  resources:
+    - Gateway (gateway.networking.k8s.io)
+    - HTTPRoute / GRPCRoute (gateway.networking.k8s.io)
+    - AuthorizationPolicy (security.istio.io)
+    - waypoint Gateway resources (gatewayClassName: istio-waypoint)
+  enrollment: >-
+    Namespace or pod labels, not code changes — `istio.io/dataplane-mode` to
+    enroll a workload and `istio.io/use-waypoint` to attach a waypoint.
+    "Adding workloads to the mesh requires only a label on a namespace or pod.
+    No application restarts." — https://ambientmesh.io/docs/setup/add-workloads/
+
+authentication:
+  control_plane: >-
+    Kubernetes API server authentication and RBAC (kubeconfig context). Not
+    provided by Ambient Mesh.
+  data_plane: >-
+    SPIFFE workload identity with automatic mTLS between enrolled workloads;
+    L4 authorization enforced by ztunnel, L7 authorization by a waypoint.
+  see: authentication/ambient-mesh-authentication.yml
+
+idempotency:
+  supported: true
+  mechanism: declarative-apply
+  header: null
+  scope: per-resource (namespace + kind + name)
+  retention: n/a
+  detail: >-
+    Every write in this API is a declarative apply of a named Kubernetes
+    resource, so re-sending the same manifest converges on the same single
+    result rather than creating a duplicate — the property an idempotency key
+    exists to provide on an imperative HTTP API. There is no Idempotency-Key
+    header because there is no imperative create endpoint to protect. Labels
+    behave the same way: re-labelling a namespace that is already enrolled is a
+    no-op.
+  evidence:
+    - https://ambientmesh.io/docs/setup/install/
+    - https://ambientmesh.io/docs/setup/add-workloads/
+    - https://ambientmesh.io/docs/waypoints/configuration/
+
+reversibility:
+  grade: documented
+  applicable: true
+  window_stated: false
+  summary: >-
+    Every documented write has a documented reversal, and the docs are explicit
+    about what a reversal does NOT undo — but no reversal is bounded by a stated
+    time window, because the reversal of a declarative apply is a delete and it
+    is available for as long as the resource exists. No window is asserted here
+    that the docs do not state.
+  surfaces:
+    - write: Enroll a namespace or workload in the mesh
+      operation: kubectl label namespace <ns> istio.io/dataplane-mode=ambient
+      reversal: kubectl label namespace <ns> istio.io/dataplane-mode-
+      window: none stated — available while the label exists
+      caveat: >-
+        "Workloads that have been added to the ambient mesh are not reconfigured
+        for regular Kubernetes networking when Istio is removed. The labels used
+        to configure the data plane mode must be removed first."
+      docs: https://ambientmesh.io/docs/operations/uninstall/
+    - write: Deploy waypoint proxies
+      operation: kubectl apply of a waypoint Gateway resource / istioctl waypoint apply
+      reversal: istioctl waypoint delete --all
+      window: none stated
+      caveat: >-
+        Removing Istio removes running waypoints but does NOT remove the
+        istio.io/use-waypoint and istio.io/use-waypoint-namespace labels that
+        enabled them; those must be removed separately.
+      docs: https://ambientmesh.io/docs/operations/uninstall/
+    - write: Install the control plane and data plane with Helm
+      operation: helm install istio-base / istiod / istio-cni / ztunnel
+      reversal: >-
+        helm delete in reverse order (ztunnel, istio-cni, istiod, istio-base)
+      window: none stated
+      caveat: >-
+        "The Istio CRDs are not removed when the Helm chart is deleted." They
+        must be deleted explicitly, and the istio-system namespace with them.
+      docs: https://ambientmesh.io/docs/operations/uninstall/
+    - write: Install with the quickstart script
+      operation: curl https://get.ambientmesh.io | sh -
+      reversal: kubectl delete -f https://get.ambientmesh.io/yamls/default.yaml
+      window: none stated
+      caveat: >-
+        "The quickstart script detects your environment, and may have installed
+        a different configuration" — the manifest used for the delete must match
+        the one the script chose.
+      docs: https://ambientmesh.io/docs/operations/uninstall/
+    - write: Upgrade the control plane / data plane
+      operation: helm upgrade istio-base / istiod / istio-cni / ztunnel
+      reversal: >-
+        Revision- and tag-based upgrade lets traffic be moved back to the prior
+        control plane revision; node cordoning and blue/green node pools are the
+        documented mitigation for data-plane blast radius.
+      window: none stated
+      rehearsal: >-
+        `istioctl x precheck` is a documented pre-flight that validates the
+        upgrade against the live cluster before anything is written — the
+        dry-run analogue for this surface.
+      docs: https://ambientmesh.io/docs/operations/upgrade/
+    - write: Install the Gateway API CRDs
+      operation: kubectl apply -f .../gateway-api/releases/download/v1.5.0/standard-install.yaml
+      reversal: kubectl delete -f .../gateway-api/releases/download/v1.5.0/standard-install.yaml
+      window: none stated
+      docs: https://ambientmesh.io/docs/operations/uninstall/
+
+dry_run_mode:
+  supported: true
+  mechanism: >-
+    `istioctl x precheck` validates that an install or upgrade is compatible
+    with the target cluster and reports issues without mutating it; Kubernetes'
+    own `kubectl apply --dry-run=server` applies to every resource in this API.
+  docs: https://ambientmesh.io/docs/operations/upgrade/
+
+pagination:
+  applicable: false
+  note: no HTTP collection endpoints; listing is `kubectl get` against the cluster
+
+versioning:
+  scheme: semver, tracking upstream Istio minor releases (1.29.x, 1.30.x, 1.31.x)
+  skew_policy: >-
+    "The CNI node agent and ztunnel components are compatible with a control
+    plane at the same version, or one version higher. This means you can only
+    upgrade from one version to the next, and should upgrade the istiod chart
+    before either."
+  docs: https://ambientmesh.io/docs/operations/upgrade/
+  see: lifecycle/ambient-mesh-lifecycle.yml
+
+errors:
+  envelope: null
+  note: >-
+    No HTTP error envelope. Failures surface as Kubernetes API validation errors
+    and as pod/CRD status conditions; the documented triage path is
+    https://ambientmesh.io/docs/operations/troubleshooting/. No errors/ artifact
+    is written because there is no published error registry to harvest and one
+    must not be invented.
+
+rate_limits:
+  applicable: false
+  note: >-
+    No vendor-metered surface. See rate-limits/ambient-mesh-rate-limits.yml,
+    which records limit_count 0.
+
+agent_conventions:
+  llms_txt: https://ambientmesh.io/llms.txt
+  markdown_twins:
+    pattern: https://ambientmesh.io/docs/<path>.md
+    verified: '2026-09-02'
+    detail: >-
+      Appending .md to a docs path (without the trailing slash) returns
+      text/markdown 200. /docs/about/key-concepts.md is 200;
+      /docs/about/key-concepts/index.md and /docs/about/key-concepts/.md are 404.
+      Announced in a banner on every docs page.
+  mcp: https://search.solo.io/mcp
+  see: mcp/ambient-mesh-mcp.yml

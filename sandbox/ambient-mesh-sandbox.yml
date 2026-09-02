@@ -1,0 +1,90 @@
+generated: '2026-09-02'
+method: searched
+source: https://ambientmesh.io/labs/
+provider: Ambient Mesh
+providerId: ambient-mesh
+description: >-
+  Ambient Mesh publishes a hands-on lab catalog — browser-based guided
+  environments where a visitor exercises the mesh without installing anything —
+  plus a quickstart path that installs into a throwaway local cluster. There are
+  no test credentials, test keys or fixture values to record, because the
+  product is self-hosted and issues no vendor credential.
+
+test_credentials:
+  applicable: false
+  note: >-
+    No test/live key duality, no test cards, no magic identifiers. Ambient Mesh
+    issues no API keys at all — see authentication/ambient-mesh-authentication.yml.
+
+labs:
+  url: https://ambientmesh.io/labs/
+  status: 200
+  launch_host: https://www.solo.io/resources/lab/
+  launch_note: >-
+    Lab cards render their "Start Lab" targets client-side; the markdown twin at
+    https://ambientmesh.io/labs.md exposes them as
+    https://www.solo.io/resources/lab/<slug> links.
+  categories:
+    - Getting Started
+    - Security
+    - Traffic Control
+    - Observability
+    - Resilience
+  entries:
+    - title: Getting Started with ambient mesh
+      category: Getting Started
+      description: Learn the basics of ambient and how to set up your first environment.
+      url: https://www.solo.io/resources/lab/getting-started-with-ambient-mesh
+    - title: Secure your cluster with ambient mesh and mTLS
+      category: Security
+      description: >-
+        Learn how to secure services in your Kubernetes cluster using ambient
+        mesh and mTLS.
+      url: https://www.solo.io/resources/lab/secure-your-cluster-with-ambient-mesh-and-mtls
+    - title: Traffic routing with waypoints
+      category: Traffic Control
+      description: Learn how to route traffic using waypoint proxies in ambient mesh.
+    - title: Access control with authorization policies
+      category: Security
+      description: >-
+        Learn how to enforce access control and write authorization policies for
+        L4 and L7 traffic.
+    - title: Getting L4 and L7 observability
+      category: Observability
+      description: Learn how to view metrics and traces from L4 and L7 traffic in ambient mesh.
+    - title: Circuit breaking
+      category: Resilience
+      description: Learn to employ circuit breaking to protect services from being overwhelmed.
+    - title: Request timeouts
+      category: Resilience
+      description: Learn to employ request timeouts to protect applications from slow upstream services.
+    - title: Outlier detection
+      category: Resilience
+      description: Passive health checking of upstream endpoints.
+
+local_sandbox:
+  name: Quickstart
+  url: https://ambientmesh.io/docs/quickstart/
+  status: 200
+  install: curl https://get.ambientmesh.io | sh -
+  detail: >-
+    The quickstart script detects the local Kubernetes distribution (k3s, k3d,
+    minikube, microk8s, kind-adjacent "default", plus gke and openshift) and
+    applies the matching manifest, so a laptop cluster is the sandbox.
+  teardown: kubectl delete -f https://get.ambientmesh.io/yamls/default.yaml
+  sample_apps:
+    - bookinfo
+    - curl
+    - httpbin
+  sample_app_source: https://github.com/istio/istio/tree/1.30.0/samples
+
+learning_paths:
+  url: https://ambientmesh.io/learning-paths/
+  status: 200
+
+cost_estimator:
+  url: https://ambientmesh.io/cost-savings-estimator/
+  status: 200
+  note: >-
+    Interactive sidecar-vs-ambient resource savings calculator. Recorded as a
+    tool the provider publishes, not as a sandbox.

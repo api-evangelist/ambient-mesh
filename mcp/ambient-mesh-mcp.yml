@@ -1,0 +1,163 @@
+generated: '2026-09-02'
+method: probed
+source: https://search.solo.io/mcp
+provider: Ambient Mesh
+providerId: ambient-mesh
+status: published
+
+# ---------------------------------------------------------------------------
+# OWNERSHIP (STEP 0c). This MCP server is served from search.solo.io, not from
+# ambientmesh.io. It is recorded here because BOTH halves of the ownership test
+# pass from the provider's own surface:
+#   1. ambientmesh.io's own documentation UI ships a "Connect to Docs MCP"
+#      action on every /docs/ page; the handler in
+#      https://ambientmesh.io/js/docs-init.js opens https://search.solo.io/.
+#      Solo.io co-created ambient mesh and operates ambientmesh.io (stated on
+#      the site footer and at https://ambientmesh.io/docs/operations/solo-builds/).
+#   2. The server actually serves Ambient Mesh content: a tools/call of
+#      get_full_page with url=https://ambientmesh.io/docs/about/key-concepts/
+#      returned the ambientmesh.io page body verbatim (probed 2026-09-02).
+# CAVEAT, recorded rather than smoothed over: the `search` tool's `product`
+# enum lists 15 Solo product doc collections and NONE of them is ambient mesh
+# or ambientmesh.io. Full-text search of this site is therefore not reachable
+# through the tool; only direct-URL retrieval (get_full_page / get_chunks) is.
+# ---------------------------------------------------------------------------
+
+deployment:
+  mode: remote
+  endpoint: https://search.solo.io/mcp
+  install: null
+  package: null
+  auth: none
+  verified: probed
+
+server:
+  name: Solo.io Docs MCP
+  operator: Solo.io
+  transport: http
+  protocol: streamable-http (stateless)
+  url: https://search.solo.io/mcp
+  landing: https://search.solo.io/
+  advertised_from: https://ambientmesh.io/docs/ ("Connect to Docs MCP" menu item)
+  authentication: none observed — anonymous tools/list and tools/call both returned 200
+
+tools:
+  - name: search
+    description: >-
+      Search documentation across 15 named Solo.io product doc collections.
+      Requires both a query and a product from a closed enum.
+    read_only: true
+    parameters:
+      - name: query
+        type: string
+        required: true
+        max_length: 2000
+      - name: product
+        type: string
+        required: true
+        enum:
+          - solo-enterprise-for-istio
+          - solo-enterprise-for-kagent
+          - solo-enterprise-for-kgateway
+          - solo-enterprise-for-agentgateway
+          - agentgateway-kubernetes
+          - agentgateway-standalone
+          - solo-enterprise-for-agentregistry
+          - agentregistry-oss
+          - kgateway-oss
+          - kagent-oss
+          - gloo-mesh-enterprise
+          - gloo-edge
+          - gloo-gateway-v1
+          - gateway-api
+          - agentevals-oss
+      - name: limit
+        type: number
+        required: false
+        default: 4
+    note: >-
+      No ambient-mesh / ambientmesh.io collection exists in this enum, so this
+      tool cannot search the Ambient Mesh docs corpus.
+  - name: get_chunks
+    description: Retrieve sequential segments of an indexed document to fill in missing context.
+    read_only: true
+    parameters:
+      - name: collection
+        type: string
+        required: true
+      - name: url
+        type: string
+        required: true
+      - name: startIndex
+        type: integer
+        required: true
+      - name: endIndex
+        type: integer
+        required: true
+  - name: get_full_page
+    description: Retrieve the full markdown content of a documentation page by URL.
+    read_only: true
+    parameters:
+      - name: url
+        type: string
+        required: true
+      - name: force
+        type: boolean
+        required: false
+    note: >-
+      VERIFIED against Ambient Mesh: get_full_page with
+      url=https://ambientmesh.io/docs/about/key-concepts/ returned the
+      ambientmesh.io page markdown. Pages over 20,000 characters error unless
+      force is set.
+
+annotations:
+  all_tools_read_only: true
+  destructive: false
+  idempotent: true
+  open_world: false
+
+x-evidence:
+  - fetched: '2026-09-02'
+    url: https://search.solo.io/mcp
+    method: GET
+    http_status: 405
+    note: >-
+      JSON-RPC error body "Method Not Allowed: this server runs in stateless
+      mode" — confirms a live MCP endpoint rather than a web page.
+  - fetched: '2026-09-02'
+    url: https://search.solo.io/mcp
+    method: POST tools/list
+    http_status: 200
+    content_type: text/event-stream
+    file: ambient-mesh-mcp-tools.json
+  - fetched: '2026-09-02'
+    url: https://search.solo.io/mcp
+    method: POST tools/call get_full_page(https://ambientmesh.io/docs/about/key-concepts/)
+    http_status: 200
+    note: returned Ambient Mesh documentation content
+  - fetched: '2026-09-02'
+    url: https://ambientmesh.io/js/docs-init.js
+    http_status: 200
+    note: >-
+      data-action="connect-docs-mcp" handler opens https://search.solo.io/
+  - fetched: '2026-09-02'
+    url: https://search.solo.io/sse
+    http_status: 404
+  - fetched: '2026-09-02'
+    url: https://search.solo.io/.well-known/oauth-protected-resource
+    http_status: 404
+
+related_agent_surfaces:
+  - name: llms.txt
+    url: https://ambientmesh.io/llms.txt
+    status: 200
+    note: served by the provider itself; saved verbatim to llms/ambient-mesh-llms.txt
+  - name: markdown twins
+    pattern: https://ambientmesh.io/docs/<path>.md
+    status: 200
+    content_type: text/markdown
+    note: >-
+      Every docs page is retrievable as raw markdown by appending .md to the
+      path WITHOUT the trailing slash (…/key-concepts.md is 200 text/markdown;
+      …/key-concepts/index.md and …/key-concepts/.md are both 404). Announced
+      in a banner on every docs page.

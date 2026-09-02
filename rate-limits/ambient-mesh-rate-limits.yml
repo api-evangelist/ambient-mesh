@@ -4,91 +4,49 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Ambient Mesh
 providerId: ambient-mesh
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
-tags:
-  - Service Mesh
-  - Istio
-  - Kubernetes
-  - Zero Trust
-  - Observability
-  - Traffic Management
-  - Microservices
-  - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the Ambient Mesh API surface. Captures per-tier
-  quotas, burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to
-  be replaced with published provider limits.
-headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
-responseCodes:
-  throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
-limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - Ambient Mesh
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - Ambient Mesh
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Ambient Mesh
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Ambient Mesh
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Ambient Mesh
-policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+modified: '2026-09-02'
+generated: '2026-09-02'
+method: searched
+source: https://ambientmesh.io/docs/
+description: >-
+  Ambient Mesh publishes no rate limits, and none apply: there is no
+  vendor-hosted API to meter. The software runs in the operator's own Kubernetes
+  cluster, so the only request ceiling is the operator's own kube-apiserver
+  throttling, which Ambient Mesh neither sets nor signals.
+limit_count: 0
+limits: []
+headers: {}
+responseCodes: {}
+
+# ---------------------------------------------------------------------------
+# 2026-09-02: this file previously carried five invented limits across free /
+# professional / enterprise tiers (10, 100, 1,000 rpm; 1,000 and 100,000
+# requests per month) and an invented X-RateLimit-* / Retry-After header set,
+# written by the 2026-05-04 bulk sweep and never observed on any Ambient Mesh
+# response. Replaced with the measured zero. See roadmap#35.
+# ---------------------------------------------------------------------------
+
+evidence:
+  - url: https://ambientmesh.io/docs/
+    status: 200
+    note: >-
+      No rate-limit, quota or throttling page in the documentation index or in
+      https://ambientmesh.io/llms.txt.
+  - url: https://ambientmesh.io/
+    status: 200
+    note: >-
+      No API host. repair-api-bases.py returns `no-usable-base` for this
+      provider; deliveryModel.callable_host is false.
+
+related_capability:
+  note: >-
+    Ambient Mesh is a producer of traffic-control capability rather than a
+    consumer-facing metered API. The resiliency features an operator configures
+    for their OWN services — circuit breaking, outlier detection, request
+    timeouts, HTTP retries, fault injection — are documented under
+    https://ambientmesh.io/docs/resiliency/. They are not rate limits on an
+    Ambient Mesh API and are deliberately not recorded here as such.
+
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

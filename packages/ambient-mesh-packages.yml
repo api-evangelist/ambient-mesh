@@ -1,0 +1,139 @@
+generated: '2026-09-02'
+method: searched
+source: https://ambientmesh.io/docs/setup/install/
+provider: Ambient Mesh
+providerId: ambient-mesh
+description: >-
+  Distribution artifacts for Ambient Mesh. There are NO first-party client SDKs
+  and no Ambient Mesh package on npm, PyPI, RubyGems, crates.io, NuGet, Maven
+  Central, Packagist or pkg.go.dev — the product is not consumed through a
+  client library, it is installed into a Kubernetes cluster. What ships instead
+  are Helm charts, container images and an install script. No SDKs pointer is
+  emitted, because none of these is a client SDK.
+
+sdk_count: 0
+package_count: 6
+
+packages:
+  - language: n/a
+    registry: helm
+    name: istio/base
+    url: https://istio-release.storage.googleapis.com/charts
+    install: helm install istio-base istio/base -n istio-system --create-namespace --wait
+    version: 1.30.4
+    published: '2026-08-27'
+    version_source: https://istio-release.storage.googleapis.com/charts/index.yaml
+    official: false
+    publisher: Istio project (upstream)
+    note: >-
+      CRDs and cluster roles. Published by the Istio project, not by Ambient
+      Mesh; ambientmesh.io documents it as the required first install step.
+      Branch 1.29 was simultaneously at 1.29.7 (2026-08-27).
+  - language: n/a
+    registry: helm
+    name: istio/istiod
+    url: https://istio-release.storage.googleapis.com/charts
+    install: helm install istiod istio/istiod --namespace istio-system --set profile=ambient --wait
+    version: 1.30.4
+    published: '2026-08-27'
+    version_source: https://istio-release.storage.googleapis.com/charts/index.yaml
+    official: false
+    publisher: Istio project (upstream)
+    note: control plane, installed with the ambient profile
+  - language: n/a
+    registry: helm
+    name: istio/cni
+    url: https://istio-release.storage.googleapis.com/charts
+    install: helm install istio-cni istio/cni -n istio-system --set profile=ambient --wait
+    version: 1.30.4
+    published: '2026-08-27'
+    version_source: https://istio-release.storage.googleapis.com/charts/index.yaml
+    official: false
+    publisher: Istio project (upstream)
+    note: node agent that redirects enrolled pod traffic to ztunnel
+  - language: n/a
+    registry: helm
+    name: istio/ztunnel
+    url: https://istio-release.storage.googleapis.com/charts
+    install: helm install ztunnel istio/ztunnel -n istio-system --wait
+    version: 1.30.4
+    published: '2026-08-27'
+    version_source: https://istio-release.storage.googleapis.com/charts/index.yaml
+    official: false
+    publisher: Istio project (upstream)
+    note: the ambient data-plane node proxy — the component that makes this ambient mode
+  - language: n/a
+    registry: oci
+    name: us-docker.pkg.dev/soloio-img/istio
+    url: https://ambientmesh.io/docs/operations/solo-builds/
+    install: helm upgrade ... --set global.hub=us-docker.pkg.dev/soloio-img/istio --set global.tag=1.30.0-solo
+    version: 1.30.0-solo
+    published: null
+    version_source: >-
+      Read from the documented example on
+      https://ambientmesh.io/docs/operations/solo-builds/ (export TAG=1.30.0-solo).
+      No anonymous registry metadata endpoint was queried, so the publish date
+      is unknown rather than guessed.
+    official: true
+    publisher: Solo.io
+    license: proprietary
+    note: >-
+      Solo.io builds of Istio, free for community use but explicitly "not open
+      source". They add sidecar/ambient interoperability for zero-downtime
+      migration; HTTP observability in ztunnel and FIPS images require a Solo
+      Enterprise for Istio licence key.
+  - language: n/a
+    registry: cdn
+    name: get.ambientmesh.io quickstart installer
+    url: https://get.ambientmesh.io/
+    install: curl https://get.ambientmesh.io | sh -
+    version: null
+    published: null
+    version_source: >-
+      Unpinned. The URL carries no version segment and the script resolves the
+      manifest at run time by detecting the cluster distribution, so a consumer
+      cannot tell from the URL which version they are about to install. Recorded
+      as null deliberately — checked, nothing to record.
+    official: true
+    publisher: Ambient Mesh
+    note: >-
+      3,089-byte bash script (HTTP 200, text/plain) that detects the Kubernetes
+      distribution (gke, k3s, k3d, minikube, microk8s, openshift, default),
+      applies the Gateway API CRDs from
+      gateway-api v1.3.0 standard-install.yaml, then applies the matching
+      manifest from https://get.ambientmesh.io/yamls/<distro>.yaml. The default
+      manifest is 974,651 bytes of text/yaml. Note the version drift: this
+      installer pins Gateway API v1.3.0 while the Helm install docs pin v1.5.0.
+
+registries_probed:
+  - registry: npm
+    query: https://registry.npmjs.org/-/v1/search?text=ambient-mesh
+    status: 200
+    result: >-
+      No Ambient Mesh package. Top hits are unrelated 3D-graphics libraries
+      (three-mesh-bvh, @pixi/mesh).
+  - registry: pypi
+    query: https://pypi.org/pypi/ambient-mesh/json
+    status: 404
+    result: absent
+  - registry: rubygems
+    query: https://rubygems.org/api/v1/gems/ambient-mesh.json
+    status: 404
+    result: absent
+  - registry: crates.io
+    query: https://crates.io/api/v1/crates?q=ambient-mesh
+    status: 200
+    result: >-
+      Only `ambient_meshes` (last updated 2023-05-06), a 3D-mesh crate from the
+      unrelated Ambient game engine. Not this provider.
+  - registry: go
+    query: https://proxy.golang.org/github.com/solo-io/ambient-mesh/@v/list
+    status: 404
+    result: absent
+  - registry: helm
+    query: https://istio-release.storage.googleapis.com/charts/index.yaml
+    status: 200
+    result: the four charts recorded above
+
+cli:
+  see: cli/ambient-mesh-cli.yml

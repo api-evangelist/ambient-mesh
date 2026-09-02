@@ -1,0 +1,90 @@
+generated: '2026-09-02'
+method: searched
+source: https://ambientmesh.io/docs/operations/upgrade/
+provider: Ambient Mesh
+providerId: ambient-mesh
+
+versioning:
+  scheme: semver
+  current_documented_version: 1.30.0
+  current_documented_version_source: https://ambientmesh.io/docs/setup/install/
+  latest_published_chart: 1.30.4
+  latest_published_chart_date: '2026-08-27'
+  latest_published_chart_source: https://istio-release.storage.googleapis.com/charts/index.yaml
+  note: >-
+    Ambient Mesh tracks upstream Istio minor releases. The ambientmesh.io docs
+    reference 1.30.0 while the Helm repository the same docs tell you to add was
+    at 1.30.4 (and 1.29.7 on the previous branch) as of 2026-08-27, so the
+    documented example version is one patch behind the shipping chart.
+
+upgrade_policy:
+  documented: true
+  url: https://ambientmesh.io/docs/operations/upgrade/
+  version_skew: >-
+    "The CNI node agent and ztunnel components are compatible with a control
+    plane at the same version, or one version higher. This means you can only
+    upgrade from one version to the next, and should upgrade the istiod chart
+    before either."
+  order:
+    - istio-base (CRDs and cluster roles)
+    - istiod (control plane)
+    - istio-cni (node agent)
+    - ztunnel (data plane)
+  preflight: istioctl x precheck
+  disruption: >-
+    "Upgrading ztunnel in-place will briefly disrupt all ambient mesh traffic on
+    the node ... After a grace period, any connections active on the old
+    instance will be terminated with a TCP RST." Waypoints and gateways are
+    managed by istiod and upgrade automatically. Application pods are NOT
+    restarted, which is the headline operational difference from sidecar mode.
+  mitigations:
+    - revisions and tags
+    - node cordoning / drain before upgrading ztunnel
+    - blue/green node pools
+
+deprecation_policy:
+  documented: false
+  sunset_header: false
+  deprecation_header: false
+  note: >-
+    ambientmesh.io publishes no deprecation or sunset policy of its own, and no
+    RFC 8594 Sunset/Deprecation header surface exists because there is no
+    vendor-hosted HTTP API. Deprecations for the underlying CRDs are governed by
+    the upstream Istio project. No Deprecation pointer is emitted.
+
+status_page:
+  published: false
+  url: null
+  note: >-
+    No status page exists and none is expected: the software runs in the
+    customer's own Kubernetes cluster, so there is no vendor-operated service to
+    report status for. No StatusPage pointer is emitted.
+
+sla:
+  published: false
+  note: >-
+    No SLA on ambientmesh.io. Commercial support is offered through Solo.io
+    (https://www.solo.io/istio-support), a separate catalog entry.
+
+support:
+  - name: Solo.io Istio support
+    url: https://www.solo.io/istio-support
+    status: 200
+  - name: Solo.io Slack (#istio)
+    url: https://slack.solo.io/
+  - name: Istio issue tracker
+    url: https://github.com/istio/istio/issues
+    status: 200
+
+release_notes:
+  published_by_provider: false
+  upstream: https://github.com/istio/istio/releases
+  note: >-
+    ambientmesh.io ships no dated changelog of its own, so no changelog/
+    artifact is written. Release notes for the underlying builds are published
+    by the Istio project.
+
+uninstall:
+  documented: true
+  url: https://ambientmesh.io/docs/operations/uninstall/
+  see: conventions/ambient-mesh-conventions.yml (reversibility block)

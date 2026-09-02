@@ -1,0 +1,141 @@
+generated: '2026-09-02'
+method: searched
+source: https://ambientmesh.io/docs/about/key-concepts/
+provider: Ambient Mesh
+providerId: ambient-mesh
+description: >-
+  Standards Ambient Mesh conforms to, read from the provider's own
+  documentation. Ambient Mesh has no HTTP API of its own: it is a self-hosted
+  Istio ambient-mode distribution whose configuration surface is a set of
+  Kubernetes custom resources plus the upstream Kubernetes Gateway API, applied
+  to the operator's own cluster. The standards below are therefore
+  configuration-plane and data-plane standards, not REST API conventions.
+
+domain_standard:
+  id: kubernetes-gateway-api
+  name: Kubernetes Gateway API
+  conforms: true
+  role: >-
+    The domain standard for this market. Ambient Mesh does not define a
+    proprietary routing API — gateways and waypoints are configured with the
+    upstream Gateway API resources (Gateway, HTTPRoute, GRPCRoute), which means
+    an operator who already speaks Gateway API needs no bespoke connector.
+  evidence:
+    - https://ambientmesh.io/docs/about/key-concepts/
+    - https://ambientmesh.io/docs/traffic-management/ingress/k8s-gw-api/
+    - https://ambientmesh.io/docs/waypoints/configuration/
+  version_referenced: v1.5.0
+  version_evidence: >-
+    https://ambientmesh.io/docs/setup/install/ installs
+    https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.0/standard-install.yaml
+
+standards:
+  - id: kubernetes-gateway-api
+    name: Kubernetes Gateway API
+    conforms: true
+    evidence: >-
+      "In ambient mesh, the Gateway API configures gateways and waypoints: at
+      the edge of the mesh, and at the edge of a service inside the mesh."
+      — https://ambientmesh.io/docs/about/key-concepts/
+  - id: kubernetes-crd
+    name: Kubernetes CustomResourceDefinition (declarative configuration API)
+    conforms: true
+    evidence: >-
+      Configuration is applied as Istio CRDs (istio.io group) plus Gateway API
+      CRDs; https://ambientmesh.io/docs/operations/uninstall/ documents removing
+      them with `kubectl get crd -oname | grep 'istio.io' | xargs kubectl delete`.
+  - id: mtls
+    name: Mutual TLS (RFC 8446 / RFC 5246 client authentication)
+    conforms: true
+    evidence: >-
+      "Ambient mesh automatically secures workload communication with mTLS as
+      soon as workloads are added to the mesh."
+      — https://ambientmesh.io/docs/security/verify-mtls/
+  - id: spiffe
+    name: SPIFFE workload identity
+    conforms: true
+    evidence: >-
+      SPIFFE identity is the basis of ztunnel and waypoint authorization policy;
+      SPIRE integration is documented in the security section.
+      — https://ambientmesh.io/docs/security/verify-mtls/
+  - id: hbone
+    name: HBONE (HTTP/2 + HTTP CONNECT + mTLS overlay tunnel)
+    conforms: true
+    evidence: >-
+      "HBONE is Istio's name for the combination of three open standards: HTTP/2,
+      HTTP CONNECT, Mutual TLS (mTLS). ... HBONE is traditionally sent over port
+      15008." — https://ambientmesh.io/docs/about/key-concepts/
+  - id: http2
+    name: HTTP/2 (RFC 9113)
+    conforms: true
+    evidence: component of HBONE — https://ambientmesh.io/docs/about/key-concepts/
+  - id: http-connect
+    name: HTTP CONNECT (RFC 9110 §9.3.6)
+    conforms: true
+    evidence: component of HBONE — https://ambientmesh.io/docs/about/key-concepts/
+  - id: xds
+    name: Envoy xDS data-plane configuration API
+    conforms: true
+    evidence: >-
+      "xDS communicates configuration and environmental state between the istiod
+      control plane and the ambient data plane proxies (ztunnel and waypoints)."
+      — https://ambientmesh.io/docs/about/key-concepts/
+  - id: prometheus-exposition
+    name: Prometheus exposition format
+    conforms: true
+    evidence: >-
+      ztunnel and waypoint metrics are scraped by Prometheus by default.
+      — https://ambientmesh.io/docs/observability/metrics/
+  - id: opentelemetry
+    name: OpenTelemetry tracing (OTLP)
+    conforms: true
+    evidence: >-
+      Tracing documents an OpenTelemetry provider sending traces over gRPC, plus
+      legacy Zipkin/Jaeger providers.
+      — https://ambientmesh.io/docs/observability/tracing/
+  - id: zipkin
+    name: Zipkin trace format
+    conforms: true
+    evidence: listed as a legacy tracing provider — https://ambientmesh.io/docs/observability/tracing/
+  - id: helm
+    name: Helm chart packaging
+    conforms: true
+    evidence: >-
+      "Helm is the recommended method for production ambient mesh installations."
+      — https://ambientmesh.io/docs/setup/install/
+  - id: oci-distribution
+    name: OCI Distribution (container image registry)
+    conforms: true
+    evidence: >-
+      Solo builds of Istio are published to us-docker.pkg.dev/soloio-img/istio.
+      — https://ambientmesh.io/docs/operations/solo-builds/
+  - id: mcp
+    name: Model Context Protocol (streamable HTTP)
+    conforms: true
+    evidence: >-
+      The "Connect to Docs MCP" action on every docs page resolves to
+      https://search.solo.io/mcp, which answered an anonymous tools/list with
+      three tools on 2026-09-02. See mcp/ambient-mesh-mcp.yml.
+  - id: llms-txt
+    name: llms.txt
+    conforms: true
+    evidence: https://ambientmesh.io/llms.txt — 200 text/plain, saved verbatim
+  - id: oauth2
+    conforms: false
+    evidence: >-
+      No OAuth 2.0 surface. The product is self-hosted; the configuration API is
+      the operator's own Kubernetes API server.
+  - id: oidc
+    conforms: false
+    evidence: /.well-known/openid-configuration returned 404 on ambientmesh.io
+  - id: rfc9457
+    name: RFC 9457 Problem Details
+    conforms: false
+    evidence: no HTTP API and no published OpenAPI to carry problem+json responses
+
+compliance:
+  certifications_published: false
+  note: >-
+    ambientmesh.io publishes no certification or trust-center page of its own.
+    No Compliance pointer is emitted. Enterprise compliance claims for the
+    commercial distribution live on solo.io, which is a separate catalog entry.

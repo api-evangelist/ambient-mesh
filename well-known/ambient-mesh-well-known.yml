@@ -1,0 +1,133 @@
+generated: '2026-09-02'
+method: probed
+source: live GET probes of the named /.well-known/ path list
+provider: Ambient Mesh
+providerId: ambient-mesh
+
+# No /.well-known/ document is served by this provider. ambientmesh.io returns a
+# real HTTP 404 (a 1,294-byte Hugo 404 page) for every named path, including the
+# negative control, so it is an honest absence and not a catch-all.
+# get.ambientmesh.io IS a catch-all: it answers 200 with the same 3,089-byte
+# install shell script for every path requested, including the negative control,
+# so every "200" on that host is discarded. No WellKnown / SecurityTxt pointer is
+# emitted for either host.
+hit_count: 0
+
+hosts:
+  - host: https://ambientmesh.io
+    soft_404_control: passed
+    path_echo_control: passed
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+        file: null
+      - path: /.well-known/openid-configuration
+        status: 404
+        file: null
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+        file: null
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+        file: null
+      - path: /.well-known/api-catalog
+        status: 404
+        file: null
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        file: null
+      - path: /.well-known/ucp.json
+        status: 404
+        file: null
+      - path: /.well-known/acp.json
+        status: 404
+        file: null
+      - path: /.well-known/aauth-resource.json
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null
+      - path: /.well-known/ambient-mesh-negative-control-7f3ab91c.json
+        status: 404
+        file: null
+        control: negative
+
+  - host: https://get.ambientmesh.io
+    soft_404_control: failed
+    path_echo_control: failed
+    control_note: >-
+      Every probed path — including
+      /.well-known/ambient-mesh-negative-control-7f3ab91c.json, which cannot
+      exist — returned HTTP 200 with an identical 3,089-byte bash install script
+      (text/plain). This host is a single-artifact distribution endpoint with a
+      catch-all, not a discovery surface. All 200s below are DISCARDED.
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        file: null
+        discarded: catch-all
+      - path: /.well-known/openid-configuration
+        status: 200
+        file: null
+        discarded: catch-all
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        file: null
+        discarded: catch-all
+      - path: /.well-known/oauth-protected-resource
+        status: 200
+        file: null
+        discarded: catch-all
+      - path: /.well-known/api-catalog
+        status: 200
+        file: null
+        discarded: catch-all
+      - path: /.well-known/ai-plugin.json
+        status: 200
+        file: null
+        discarded: catch-all
+      - path: /.well-known/aauth-resource.json
+        status: 200
+        file: null
+        discarded: catch-all
+      - path: /.well-known/agent-card.json
+        status: 200
+        file: null
+        discarded: catch-all
+      - path: /.well-known/agent.json
+        status: 200
+        file: null
+        discarded: catch-all
+      - path: /.well-known/ambient-mesh-negative-control-7f3ab91c.json
+        status: 200
+        file: null
+        control: negative
+        discarded: catch-all
+
+  - host: https://search.solo.io
+    note: >-
+      MCP host advertised from ambientmesh.io docs; probed for completeness.
+    documents:
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+        file: null
+      - path: /.well-known/mcp.json
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null
+
+a2a:
+  found: false
+  note: >-
+    No A2A Agent Card at either the canonical /.well-known/agent-card.json or
+    the legacy /.well-known/agent.json on any host. Per the pipeline contract no
+    a2a/ artifact and no AgentCard pointer are written.

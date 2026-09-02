@@ -1,0 +1,107 @@
+generated: '2026-09-02'
+method: searched
+source: https://ambientmesh.io/docs/operations/uninstall/
+provider: Ambient Mesh
+providerId: ambient-mesh
+description: >-
+  Ambient Mesh is operated from the command line, and ambientmesh.io documents
+  the exact command surface. Ambient Mesh does not publish a CLI of its own —
+  the binary is `istioctl`, published by the upstream Istio project (a separate
+  catalog entry), used alongside `kubectl` and `helm`. This artifact records the
+  commands the provider's own documentation tells an operator to run, with that
+  attribution stated rather than implied.
+
+binary: istioctl
+publisher: Istio project (upstream)
+official_to_this_provider: false
+package: see packages/ambient-mesh-packages.yml
+install:
+  - method: docs
+    note: >-
+      "Before upgrading Istio, download the corresponding new version of
+      istioctl" — https://ambientmesh.io/docs/operations/upgrade/. ambientmesh.io
+      does not host the binary or publish an install one-liner for it.
+
+companion_tools:
+  - kubectl
+  - helm
+  - curl https://get.ambientmesh.io | sh -   # quickstart installer, see packages/
+
+commands:
+  - group: waypoints
+    command: istioctl waypoint delete --all
+    purpose: Remove a single waypoint, all waypoints in a namespace, or all in the cluster.
+    docs: https://ambientmesh.io/docs/operations/uninstall/
+  - group: waypoints
+    command: istioctl waypoint apply
+    purpose: Deploy a waypoint proxy (the Gateway API resource can also be applied directly).
+    docs: https://ambientmesh.io/docs/waypoints/configuration/
+  - group: upgrade
+    command: istioctl x precheck
+    purpose: >-
+      Validate that an install or upgrade is compatible with the target cluster
+      before writing anything. The documented pre-flight / dry-run step.
+    docs: https://ambientmesh.io/docs/operations/upgrade/
+  - group: install
+    command: istioctl install
+    purpose: >-
+      Alternative to Helm. "Other methods such as istioctl install use the same
+      Helm charts under the hood."
+    docs: https://ambientmesh.io/docs/setup/install/
+  - group: enrollment
+    command: kubectl label namespace <ns> istio.io/dataplane-mode=ambient
+    purpose: Enroll a namespace in the ambient data plane.
+    docs: https://ambientmesh.io/docs/setup/add-workloads/
+  - group: enrollment
+    command: kubectl label namespace <ns> istio.io/dataplane-mode-
+    purpose: Remove a namespace from the ambient data plane (the reversal).
+    docs: https://ambientmesh.io/docs/operations/uninstall/
+  - group: enrollment
+    command: kubectl label namespace <ns> istio.io/use-waypoint-
+    purpose: Detach a waypoint from a namespace.
+    docs: https://ambientmesh.io/docs/operations/uninstall/
+  - group: install
+    command: helm install istio-base|istiod|istio-cni|ztunnel istio/<chart> -n istio-system
+    purpose: The recommended production install path, in that order.
+    docs: https://ambientmesh.io/docs/setup/install/
+  - group: upgrade
+    command: helm upgrade istio-base|istiod|istio-cni|ztunnel istio/<chart> -n istio-system
+    purpose: Upgrade control plane then data plane, in that order.
+    docs: https://ambientmesh.io/docs/operations/upgrade/
+  - group: uninstall
+    command: helm delete ztunnel|istio-cni|istiod|istio-base -n istio-system
+    purpose: Remove the installation in reverse order. Does NOT remove the Istio CRDs.
+    docs: https://ambientmesh.io/docs/operations/uninstall/
+  - group: uninstall
+    command: kubectl get crd -oname | grep 'istio.io' | xargs kubectl delete
+    purpose: Remove the Istio CRDs, which helm delete leaves behind.
+    docs: https://ambientmesh.io/docs/operations/uninstall/
+  - group: verify
+    command: helm ls -n istio-system
+    purpose: Confirm which charts and versions are deployed.
+    docs: https://ambientmesh.io/docs/setup/install/
+  - group: verify
+    command: kubectl get pods -n istio-system
+    purpose: Confirm istiod, istio-cni-node and ztunnel are running.
+    docs: https://ambientmesh.io/docs/setup/install/
+
+flows:
+  - name: Install ambient mesh for production
+    steps:
+      - kubectl apply -f <gateway-api v1.5.0 standard-install.yaml>
+      - helm repo add istio https://istio-release.storage.googleapis.com/charts && helm repo update istio
+      - helm install istio-base istio/base -n istio-system --create-namespace --wait
+      - helm install istiod istio/istiod --namespace istio-system --set profile=ambient --wait
+      - helm install istio-cni istio/cni -n istio-system --set profile=ambient --wait
+      - helm install ztunnel istio/ztunnel -n istio-system --wait
+      - helm ls -n istio-system
+    docs: https://ambientmesh.io/docs/setup/install/
+  - name: Upgrade with minimal disruption
+    steps:
+      - istioctl x precheck
+      - helm repo update istio
+      - helm upgrade istio-base istio/base -n istio-system
+      - helm upgrade istiod istio/istiod -n istio-system --wait
+      - helm upgrade istio-cni istio/cni -n istio-system
+      - helm upgrade ztunnel istio/ztunnel -n istio-system --wait
+    docs: https://ambientmesh.io/docs/operations/upgrade/

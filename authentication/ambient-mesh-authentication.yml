@@ -1,0 +1,100 @@
+generated: '2026-09-02'
+method: searched
+source: https://ambientmesh.io/docs/security/
+provider: Ambient Mesh
+providerId: ambient-mesh
+description: >-
+  Authentication profile for Ambient Mesh. Derived from documentation, not from
+  an OpenAPI securitySchemes block — no OpenAPI exists for this provider (see
+  x-coverage in apis.yml). Two distinct planes have to be kept apart here, and
+  conflating them is the easy mistake: the CONFIGURATION plane is the operator's
+  own Kubernetes API server, and the DATA plane is workload-to-workload mTLS
+  that Ambient Mesh itself provides.
+
+api_keys: false
+oauth2: false
+oidc: false
+basic_auth: false
+bearer_token: false
+mutual_tls: true
+
+planes:
+  - plane: configuration
+    endpoint: the operator's own Kubernetes API server
+    provided_by: Kubernetes, not Ambient Mesh
+    scheme: >-
+      kubeconfig credential (client certificate, token, or cloud-provider
+      exec plugin) plus Kubernetes RBAC on the Istio and Gateway API resource
+      groups. Ambient Mesh ships no credential of its own, issues no API key,
+      and hosts no authorization server.
+    evidence: >-
+      Every documented write in the docs is `kubectl`, `helm` or `istioctl`
+      against a cluster context — see https://ambientmesh.io/docs/setup/install/
+      and https://ambientmesh.io/docs/operations/upgrade/.
+  - plane: data
+    endpoint: workload-to-workload traffic inside the mesh
+    provided_by: Ambient Mesh (ztunnel and waypoint proxies)
+    scheme: mutualTLS
+    identity: SPIFFE workload identity
+    detail: >-
+      "Ambient mesh automatically secures workload communication with mTLS as
+      soon as workloads are added to the mesh" — no application change, no
+      sidecar injection. Certificates are issued and rotated by istiod; SPIRE
+      integration is documented for external identity issuance.
+    transport: >-
+      HBONE — HTTP CONNECT tunnels over HTTP/2, secured with mTLS, conventionally
+      on port 15008.
+    evidence:
+      - https://ambientmesh.io/docs/security/verify-mtls/
+      - https://ambientmesh.io/docs/about/key-concepts/
+  - plane: control (xDS)
+    endpoint: istiod to ztunnel / waypoints
+    provided_by: Ambient Mesh
+    scheme: mutualTLS
+    detail: >-
+      xDS configuration is delivered from istiod to the ambient data-plane
+      proxies. For multicluster, Solo Enterprise for Istio peers each cluster's
+      istiod "over mTLS-secured xDS, without requiring remote Kubernetes API
+      access or shared kubeconfig secrets."
+    evidence: https://ambientmesh.io/docs/setup/requirements/
+
+authorization:
+  - layer: L4
+    enforced_by: ztunnel
+    resource: AuthorizationPolicy (security.istio.io)
+    detail: >-
+      "The ztunnel proxy enforces authorization policy at Layer 4 (L4). Because
+      ztunnel operates at L4," L7 conditions require a waypoint.
+    docs: https://ambientmesh.io/docs/security/ztunnel-authz/
+  - layer: L7
+    enforced_by: waypoint proxy
+    resource: AuthorizationPolicy (security.istio.io)
+    detail: >-
+      "Without a waypoint installed, you can only use Layer 4 security policies.
+      A waypoint gives you" L7 policy — HTTP method, path and header conditions.
+    docs: https://ambientmesh.io/docs/security/waypoint-authz/
+  - layer: kubernetes
+    enforced_by: CNI plugin
+    resource: NetworkPolicy / CiliumNetworkPolicy
+    detail: >-
+      Kubernetes NetworkPolicy remains in force alongside mesh policy and has
+      documented interactions with the ambient data plane.
+    docs: https://ambientmesh.io/docs/security/configure-networkpolicies/
+
+scopes:
+  applicable: false
+  note: >-
+    No OAuth scope surface exists, so no scopes/ artifact is written.
+    Authorization is expressed as Kubernetes RBAC on the configuration plane and
+    as AuthorizationPolicy resources on the data plane.
+
+well_known:
+  openid_configuration: 404
+  oauth_authorization_server: 404
+  see: well-known/ambient-mesh-well-known.yml
+
+docs:
+  - https://ambientmesh.io/docs/security/
+  - https://ambientmesh.io/docs/security/verify-mtls/
+  - https://ambientmesh.io/docs/security/ztunnel-authz/
+  - https://ambientmesh.io/docs/security/waypoint-authz/

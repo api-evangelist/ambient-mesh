@@ -44,7 +44,7 @@ tags:
 url: >-
   https://raw.githubusercontent.com/api-evangelist/ambient-mesh/refs/heads/main/apis.yml
 created: '2026-04-19'
-modified: '2026-04-19'
+modified: '2026-09-02'
 specificationVersion: '0.23'
 apis:
   - aid: ambient-mesh:ambient-mesh
@@ -96,6 +96,34 @@ common:
     url: https://github.com/istio
   - type: GitHubRepository
     url: https://github.com/istio/istio
+  - type: DeveloperPortal
+    url: https://ambientmesh.io/get-started/
+  - type: Support
+    url: https://www.solo.io/istio-support
+  - type: LLMsTxt
+    url: llms/ambient-mesh-llms.txt
+  - type: MCPServer
+    url: mcp/ambient-mesh-mcp.yml
+  - type: Sandbox
+    url: sandbox/ambient-mesh-sandbox.yml
+  - type: Authentication
+    url: authentication/ambient-mesh-authentication.yml
+  - type: Conventions
+    url: conventions/ambient-mesh-conventions.yml
+  - type: Idempotency
+    url: conventions/ambient-mesh-conventions.yml
+  - type: Conformance
+    url: conformance/ambient-mesh-conformance.yml
+  - type: Lifecycle
+    url: lifecycle/ambient-mesh-lifecycle.yml
+  - type: Packages
+    url: packages/ambient-mesh-packages.yml
+  - type: CLI
+    url: cli/ambient-mesh-cli.yml
+  - type: VulnerabilityDisclosure
+    url: security/ambient-mesh-vulnerability-disclosure.yml
+  - type: Security
+    url: security/ambient-mesh-vulnerability-disclosure.yml
   - type: Features
     data:
       - name: Sidecar-Less Architecture
@@ -183,3 +211,10 @@ common:
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
+x-enrichment:
+  date: '2026-09-02'
+  status: enriched
+  artifacts_added: 12
+  pass: local-v1
+x-coverage:
+  state: covered
