@@ -2,20 +2,20 @@
   "repo": "ambient-mesh",
   "feeds": [
     {
-      "source": "https://ambientmesh.io/blog/index.xml",
-      "feed_url": "https://ambientmesh.io/blog/index.xml",
-      "title": "",
-      "saved": 0,
-      "method": "feed"
-    },
-    {
       "source": "https://ambientmesh.io/docs/quickstart/",
       "feed_url": "https://ambientmesh.io/docs/quickstart/",
       "title": "",
       "saved": 0,
       "method": "none"
+    },
+    {
+      "source": "https://ambientmesh.io/blog/index.xml",
+      "feed_url": "https://ambientmesh.io/blog/index.xml",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
     }
   ],
   "post_count": 19,
-  "fetched": "2026-08-30T22:33:40Z"
+  "fetched": "2026-09-06T19:17:18Z"
 }
