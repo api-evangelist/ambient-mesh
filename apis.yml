@@ -56,7 +56,6 @@ apis:
       observability through standard Kubernetes CRDs including HTTPRoute,
       Gateway, AuthorizationPolicy, and WaypointProxy resources.
     humanURL: https://ambientmesh.io/
-    baseURL: https://ambientmesh.io
     tags:
       - Service Mesh
       - Kubernetes
