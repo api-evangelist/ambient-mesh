@@ -1,4 +1,22 @@
 {
+  "endpoint": "https://search.solo.io/mcp",
+  "captured": "2026-10-20",
+  "method": "initialize + tools/list (anonymous, no tool called; roadmap#992)",
+  "protocol_version": "2025-06-18",
+  "server_info": {
+    "name": "Solo.io - Docs MCP",
+    "version": "1.0.0",
+    "icons": [
+      {
+        "src": "https://search.solo.io/public/solo.svg",
+        "sizes": [
+          "512x512"
+        ],
+        "mimeType": "image/svg+xml"
+      }
+    ],
+    "websiteUrl": "https://solo.io"
+  },
   "result": {
     "tools": [
       {
@@ -102,7 +120,7 @@
       },
       {
         "name": "get_full_page",
-        "description": "\nRetrieve the full markdown content of a documentation page by its URL from the database.\n\n**When to use:** Use when you need the complete content of a specific page and chunk-based retrieval is insufficient.\n\n**Limits:** Pages longer than 20,000 characters will return an error with the approximate token count. Set `force: true` to retrieve them anyway \u2014 note that very large pages consume significant context window space.\n    ",
+        "description": "\nRetrieve the full markdown content of a documentation page by its URL from the database.\n\n**When to use:** Use when you need the complete content of a specific page and chunk-based retrieval is insufficient.\n\n**Limits:** Pages longer than 20,000 characters will return an error with the approximate token count. Set `force: true` to retrieve them anyway — note that very large pages consume significant context window space.\n    ",
         "inputSchema": {
           "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
@@ -112,7 +130,7 @@
               "description": "The exact URL of the documentation page to retrieve"
             },
             "force": {
-              "description": "Set to true to retrieve the page even if it exceeds the 20,000 character limit. Use with caution \u2014 large pages consume significant context.",
+              "description": "Set to true to retrieve the page even if it exceeds the 20,000 character limit. Use with caution — large pages consume significant context.",
               "type": "boolean"
             }
           },
@@ -131,7 +149,5 @@
         }
       }
     ]
-  },
-  "jsonrpc": "2.0",
-  "id": 1
+  }
 }
