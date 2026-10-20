@@ -27,8 +27,45 @@ server:
   authentication: none observed — anonymous tools/list and tools/call both returned 200
 tools:
 - name: search
-  description: Search documentation across 15 named Solo.io product doc collections. Requires both a query
-    and a product from a closed enum.
+  description: 'Search documentation for the following products (Product (Aliases) - [collection source
+    types]):
+
+
+    - **Solo Enterprise For Istio** (istio) - [docs]
+
+    - **Solo Enterprise For Kagent** (kagent) - [docs]
+
+    - **Solo Enterprise For Kgateway** (kgateway) - [docs]
+
+    - **Solo Enterprise For Agentgateway** (agentgateway) - [docs]
+
+    - **Agentgateway Kubernetes** (agentgateway) - [docs]
+
+    - **Agentgateway Standalone** (agentgateway) - [docs]
+
+    - **Solo Enterprise For Agentregistry** (agentregistry) - [docs]
+
+    - **Agentregistry OSS** (agentregistry) - [docs]
+
+    - **Kgateway OSS** (kgateway) - [docs]
+
+    - **Kagent OSS** (kagent) - [docs]
+
+    - **Gloo Mesh Enterprise** (gloo-mesh) - [docs]
+
+    - **Gloo Edge** - [docs]
+
+    - **Gloo Gateway V1** (gloo-gateway v1) - [docs]
+
+    - **Gateway Api** - [docs]
+
+    - **Agentevals OSS** - [docs]
+
+
+
+    **Usage Note:** Evaluate search results: if they provide a complete and certain answer, then proceed.
+    If the result is relevant but incomplete (e.g., ends mid - sentence), refers to a "see below" section,
+    then use the `get_chunks` tool to get more context from the same document.'
   read_only: true
   parameters:
   - name: query
@@ -61,7 +98,15 @@ tools:
   note: No ambient-mesh / ambientmesh.io collection exists in this enum, so this tool cannot search the
     Ambient Mesh docs corpus.
 - name: get_chunks
-  description: Retrieve sequential segments of an indexed document to fill in missing context.
+  description: 'Retrieve sequential segments of a document to fill in missing context.
+
+
+    **When to use:** Use only when a `search` result is highly relevant but incomplete. This is the preferred
+    way to "read the rest of the page" without performing additional keyword searches.
+
+
+    **When to skip:** Do not use if the `search` snippet already contains the full answer or if the search
+    result is irrelevant to the user''s query.'
   read_only: true
   parameters:
   - name: collection
@@ -77,7 +122,16 @@ tools:
     type: integer
     required: true
 - name: get_full_page
-  description: Retrieve the full markdown content of a documentation page by URL.
+  description: 'Retrieve the full markdown content of a documentation page by its URL from the database.
+
+
+    **When to use:** Use when you need the complete content of a specific page and chunk-based retrieval
+    is insufficient.
+
+
+    **Limits:** Pages longer than 20,000 characters will return an error with the approximate token count.
+    Set `force: true` to retrieve them anyway — note that very large pages consume significant context
+    window space.'
   read_only: true
   parameters:
   - name: url
@@ -158,3 +212,4 @@ tool_quality:
   scored: false
   note: Facts from the saved tools/list capture (mcp_tool_quality.py); recorded, not scored. Checks learned
     from Glimind's agent-readiness audit.
+tools_count: 3
