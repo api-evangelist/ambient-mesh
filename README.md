@@ -1,4 +1,4 @@
-# Ambient Mesh (ambient-mesh)
+# Ambient Mesh
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,81 +66,114 @@
 
 Ambient Mesh is a sidecar-less service mesh architecture built on Istio that simplifies microservices communication, enhances zero-trust security, and improves observability without requiring sidecar proxy injection. It uses a shared per-node proxy (ztunnel) for zero-trust security and optional waypoint proxies for advanced Layer 7 policies, enabling seamless migration from sidecar-based meshes with zero downtime.
 
-**URL:** [https://ambientmesh.io/](https://ambientmesh.io/)
+**Areas:** Service Mesh · Istio · Kubernetes · Zero Trust · Observability · Traffic Management · Microservices
 
-**Run:** [Capabilities Using Naftiko](https://github.com/naftiko/fleet?utm_source=api-evangelist&utm_medium=readme&utm_campaign=company-api-evangelist&utm_content=repo)
+## Ambient Mesh on APIs.io
 
-## Tags
+Everything profiled for Ambient Mesh is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/ambient-mesh/](https://apis.io/providers/ambient-mesh/)** — or go straight to one of the APIs or properties below.
 
- - Service Mesh, Istio, Kubernetes, Zero Trust, Observability, Traffic Management, Microservices
+### APIs (1)
 
-## Timestamps
+- [Ambient Mesh](https://apis.io/apis/ambient-mesh/ambient-mesh/) — Ambient Mesh provides a sidecar-less service mesh via the Kubernetes Gateway API and Istio ambient mode. It exposes configuration APIs for traffic…
 
-- **Created:** 2026-04-19
-- **Modified:** 2026-04-19
+### Published properties
 
-## APIs
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-### Ambient Mesh
+#### MCP servers (1)
 
-Ambient Mesh provides a sidecar-less service mesh via the Kubernetes Gateway API and Istio ambient mode. It exposes configuration APIs for traffic management, security policies, resilience settings, and observability through standard Kubernetes CRDs including HTTPRoute, Gateway, AuthorizationPolicy, and WaypointProxy resources.
+Model Context Protocol servers that expose the API to agents.
 
-**Human URL:** [https://ambientmesh.io/](https://ambientmesh.io/)
+- [Solo.io Docs MCP](https://apis.io/servers/ambient-mesh/solo-io-docs-mcp/)
 
-#### Tags
+#### Security (3)
 
- - Service Mesh, Kubernetes, Istio, Zero Trust
+Authentication, trust centre, and vulnerability disclosure.
 
-#### Properties
+- [Ambient Mesh Authentication](https://apis.io/security/ambient-mesh/ambient-mesh-authentication/)
+- [Ambient Mesh Domain Security](https://apis.io/security/ambient-mesh/ambient-mesh-domain-security/)
+- [Ambient Mesh Vulnerability Disclosure](https://apis.io/security/ambient-mesh/ambient-mesh-vulnerability-disclosure/)
 
-- [Documentation](https://ambientmesh.io/docs/)
-- [GettingStarted](https://ambientmesh.io/docs/quickstart/)
-- [APIReference](https://ambientmesh.io/docs/)
+#### Plans and pricing (1)
 
-## Common Properties
+Published plans, tiers and prices.
+
+- [Ambient Mesh Plans Pricing](https://apis.io/plans/ambient-mesh/ambient-mesh-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Ambient Mesh Rate Limits](https://apis.io/rate-limits/ambient-mesh/ambient-mesh-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Ambient Mesh Finops](https://apis.io/finops/ambient-mesh/ambient-mesh-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://ambientmesh.io/)
 - [Documentation](https://ambientmesh.io/docs/)
-- [GettingStarted](https://ambientmesh.io/docs/quickstart/)
+- [Getting started](https://ambientmesh.io/docs/quickstart/)
+- [Support](https://www.solo.io/istio-support)
 - [Blog](https://ambientmesh.io/blog/)
-- [GitHubOrganization](https://github.com/istio)
-- [GitHubRepository](https://github.com/istio/istio)
+- [GitHub](https://github.com/istio)
 
-## Features
+## API Evangelist rating
 
-| Name | Description |
-|------|-------------|
-| Sidecar-Less Architecture | Operates at the platform layer without sidecar proxy injection, reducing resource overhead and operational complexity while maintaining full service mesh capabilities. |
-| Zero-Trust Security | SPIFFE-based workload identity with automatic mutual TLS encryption between workloads, certificate management, and zero-trust network policies enforced by ztunnel. |
-| Traffic Management | Advanced traffic routing, load balancing, traffic splitting, mirroring, blue-green deployments, and gateway management via Kubernetes Gateway API HTTPRoute resources. |
-| Resilience | Zone-aware load balancing, circuit breaking, outlier detection, fault injection, timeouts, and retry budgets for high-availability workloads. |
-| Observability | Distributed tracing, performance metrics via Prometheus, Kiali observability console, and HTTP observability for traffic visualization and security verification. |
-| Zero-Downtime Migration | Free migration tooling for upgrading from sidecar-based architectures with automated workload analysis and risk mitigation for waypoint proxy requirements. |
-| Waypoint Proxies | Optional per-namespace or per-workload Layer 7 proxies that provide advanced policy enforcement without requiring per-pod sidecar containers. |
+**Kin Score 33.8** — thin · rubric 0.25.0 · scored 2026-10-23
 
-## Use Cases
+| Facet | Score |
+|---|---|
+| Discoverability | 66.7 |
+| Contract quality | 0.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 28.9 |
+| Developer ergonomics | 71.4 |
+| Access clarity | 0.0 |
 
-| Name | Description |
-|------|-------------|
-| Microservices Security | Enforce mutual TLS and zero-trust policies across microservices without modifying application code or injecting sidecar proxies. |
-| Traffic Management | Implement advanced traffic routing, A/B testing, canary deployments, and traffic mirroring across Kubernetes workloads. |
-| Istio Migration | Migrate existing Istio sidecar-based deployments to ambient mode with zero downtime using the free migration tooling. |
-| Kubernetes Observability | Gain full visibility into service-to-service communication with metrics, tracing, and traffic visualization via Kiali and Prometheus. |
-| Multi-Cluster Networking | Extend ambient mesh policies and security across multiple Kubernetes clusters for hybrid and multi-cloud architectures. |
+**Agent readiness 19.8** — agent-aware
 
-## Integrations
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | — |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | documented (partial credit) |
+| Error Semantics | — |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | yes |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | na |
 
-| Name | Description |
-|------|-------------|
-| Istio | Ambient Mesh is built on Istio ambient mode, using its control plane and CRDs for configuration. |
-| Kubernetes Gateway API | Uses the standard Kubernetes Gateway API with HTTPRoute, Gateway, and GRPCRoute resources for traffic management. |
-| Prometheus | Integrates with Prometheus for metrics collection and monitoring of mesh traffic and performance. |
-| Kiali | Integrates with Kiali for service mesh observability, traffic visualization, and security verification. |
-| Gloo Mesh | Solo.io's Gloo Mesh provides enterprise-grade ambient mesh management for scaling across enterprise workloads. |
-| OpenShift | Red Hat OpenShift Service Mesh 3.x supports Istio ambient mode for OpenShift deployments. |
+**Regulatory alignment 22.5** — Horizontal (data, software, accessibility, platform)
 
-## Maintainers
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/ambient-mesh/](https://apis.io/providers/ambient-mesh/).
 
-**FN:** Kin Lane
+## How this profile is made
 
-**Email:** kin@apievangelist.com
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Ambient Mesh: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/ambient-mesh/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
